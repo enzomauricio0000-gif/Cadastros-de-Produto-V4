@@ -1,0 +1,67 @@
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Produtos - V4</title>
+    <!-- Biblioteca para gerar QR Code -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Cadastro de Produtos</h1>
+
+        <form id="form-produto">
+            <input type="text" id="nome" placeholder="Nome do Produto" required>
+            <input type="number" id="preco" step="0.01" min="0.01" placeholder="Preço (R$)" required>
+            <button type="submit">Cadastrar Produto</button>
+        </form>
+
+        <!-- [NOVO V4] Campo de Pesquisa -->
+        <div class="busca-container">
+            <label for="campo-busca">Pesquisar no estoque:</label>
+            <input type="text" id="campo-busca" placeholder="Digite para filtrar os produtos...">
+        </div>
+
+        <!-- [NOVO V4] Indicador de Métricas -->
+        <div class="metricas-container" id="metricas-estoque">
+            Total em Estoque (Visível): R$ 0,00
+        </div>
+
+        <h2>Produtos Cadastrados</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="lista-produtos"></tbody>
+        </table>
+
+        <!-- [NOVO V4] Mensagem de feedback vazia -->
+        <div id="mensagem-feedback" class="mensagem-vazia" style="display: none;">
+            Nenhum produto foi localizado.
+        </div>
+
+        <div id="area-etiqueta" class="etiqueta-container" style="display: none;">
+            <h3>Etiqueta do Produto</h3>
+            <p id="etiqueta-nome"></p>
+            <p id="etiqueta-preco"></p>
+            
+            <div id="qrcode"></div>
+
+            <button id="btn-imprimir" onclick="imprimirEtiqueta()">
+                🖨️ Imprimir Etiqueta com QR Code
+            </button>
+            <p class="explicacao-botao">
+                <em>ℹ️ Este botão gera uma versão simplificada para ser colada no item.</em>
+            </p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
