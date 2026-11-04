@@ -1,3 +1,4 @@
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -6,40 +7,54 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f6f9;
-    color: #333333;
+    background-color: #eef0f8;
+    color: #34344a;
     padding: 20px;
 }
 
 .container {
-    max-width: 650px;
-    margin: 0 auto;
-    background-color: #ffffff;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    max-width: 850px;
+    margin: 30px auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(45, 40, 90, 0.12);
 }
 
-h1, h2 {
-    color: #2c3e50;
-    margin-bottom: 15px;
+h1 {
+    color: #29245c;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.subtitulo {
+    text-align: center;
+    color: #8985a5;
+    margin-bottom: 25px;
 }
 
 h2 {
-    margin-top: 30px;
+    color: #51439c;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    font-size: 19px;
 }
+
+/* FORMULÁRIO */
 
 form {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
     margin-bottom: 20px;
 }
 
 form input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 11px;
+    border: 1px solid #d5d1eb;
+    border-radius: 6px;
     font-size: 14px;
+    min-width: 0;
 }
 
 form input[type="text"] {
@@ -50,6 +65,70 @@ form input[type="number"] {
     flex: 1;
 }
 
+/* BOTÕES */
+
+button {
+    cursor: pointer;
+    padding: 9px 13px;
+    margin: 2px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    background-color: #e8e5fa;
+    color: #29245c;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+form button {
+    background-color: #6554c0;
+    color: white;
+}
+
+/* PESQUISA */
+
+.busca-container {
+    background-color: #f5f3ff;
+    padding: 15px;
+    border: 1px solid #ddd6fe;
+    border-radius: 8px;
+}
+
+.busca-container input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #c4b5fd;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.busca-container input:focus {
+    outline: none;
+    border-color: #6554c0;
+    box-shadow: 0 0 5px rgba(101, 84, 192, 0.2);
+}
+
+/* TOTAL DO ESTOQUE */
+
+.metricas-container {
+    background-color: #e8edff;
+    border: 1px solid #c7d2fe;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    color: #373080;
+    font-weight: bold;
+}
+
+/* TABELA */
+
+.tabela-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -57,106 +136,59 @@ table {
 }
 
 th, td {
-    border: 1px solid #ddd;
-    padding: 10px;
+    border: 1px solid #e1def0;
+    padding: 12px;
     text-align: left;
 }
 
 th {
-    background-color: #e9ecef;
-    font-weight: bold;
+    background-color: #e8e5fa;
+    color: #29245c;
 }
 
-button {
-    cursor: pointer;
-    padding: 8px 12px;
-    margin: 2px;
-    border: 1px solid #cccccc;
-    border-radius: 4px;
-    background-color: #e9ecef;
-    color: #333333;
-    font-size: 14px;
-}
+/* BOTÕES DA TABELA */
 
-button:hover {
-    background-color: #dae0e5;
-}
-
-form button[type="submit"] {
-    background-color: #0d6efd;
+.editar {
+    background-color: #6554c0;
     color: white;
-    border: none;
 }
 
-form button[type="submit"]:hover {
-    background-color: #0b5ed7;
+.excluir {
+    background-color: #dc5365;
+    color: white;
 }
 
-.etiqueta-container {
-    margin-top: 25px;
-    padding: 15px;
-    border: 2px dashed #0d6efd;
-    border-radius: 8px;
-    background-color: #f8f9fa;
-    text-align: center;
-}
-
-#qrcode {
-    display: flex;
-    justify-content: center;
-    margin: 15px 0;
-}
-
-.explicacao-botao {
-    font-size: 0.85em;
-    color: #6c757d;
-    margin-top: 6px;
-}
-
-/* --- [NOVO V4] ESTILOS DE BUSCA E MÉTRICAS --- */
-.busca-container {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 20px;
-    padding: 12px;
-    background-color: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-}
-
-.busca-container label {
-    font-weight: bold;
-    font-size: 13px;
-    color: #2563eb;
-}
-
-.busca-container input {
-    padding: 9px;
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.busca-container input:focus {
-    outline: none;
-    border-color: #2563eb;
-}
-
-.metricas-container {
-    background-color: #e8f4fd;
-    border: 1px solid #b6d4fe;
-    padding: 12px 15px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-    font-weight: bold;
-    color: #084298;
-    font-size: 14px;
-}
+/* MENSAGEM */
 
 .mensagem-vazia {
     text-align: center;
-    color: #6c757d;
+    color: #77738f;
     font-style: italic;
     padding: 15px;
+}
+
+/* CELULAR */
+
+@media (max-width: 600px) {
+
+    .container {
+        padding: 15px;
+    }
+
+    form {
+        flex-direction: column;
+    }
+
+    form input {
+        width: 100%;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    th, td {
+        padding: 7px;
+    }
+
 }

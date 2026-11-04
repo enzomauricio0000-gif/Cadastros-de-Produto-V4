@@ -1,135 +1,296 @@
-let produtos = [];
 
-const formProduto = document.getElementById("form-produto");
-const listaProdutos = document.getElementById("lista-produtos");
-const areaEtiqueta = document.getElementById("area-etiqueta");
-const qrcodeContainer = document.getElementById("qrcode");
+// LISTA DE PRODUTOS
 
-// [NOVO V4] Elementos de busca e métricas
+let listaDeProdutos = JSON.parse(localStorage.getItem("produtos")) || [];
+
+let indiceEdicao = null;
+
+
+// ELEMENTOS HTML
+
+const formulario = document.getElementById("form-produto");
+
+const campoNome = document.getElementById("nome");
+
+const campoPreco = document.getElementById("preco");
+
+const campoQuantidade = document.getElementById("quantidade");
+
 const campoBusca = document.getElementById("campo-busca");
-const metricasEstoque = document.getElementById("metricas-estoque");
-const mensagemFeedback = document.getElementById("mensagem-feedback");
 
-window.onload = function() {
-    const produtosSalvos = localStorage.getItem("produtos");
-    if (produtosSalvos) {
-        produtos = JSON.parse(produtosSalvos);
-        produtos = produtos.filter(p => p.preco > 0);
-        salvarNoLocalStorage();
-        renderizarTabela();
-    }
-};
+const tabela = document.getElementById("lista-produtos");
 
-formProduto.addEventListener("submit", function(event) {
+const totalEstoque = document.getElementById("total-estoque");
+
+const mensagemVazia = document.getElementById("mensagem-vazia");
+
+const botaoSalvar = document.getElementById("botao-salvar");
+
+
+// SALVAR PRODUTOS
+
+function salvarProdutos() {
+
+    localStorage.setItem(
+        "produtos",
+        JSON.stringify(listaDeProdutos)
+    );
+
+}
+
+
+// CADASTRAR PRODUTOS
+
+formulario.addEventListener("submit", function(event) {
+
     event.preventDefault();
 
-    const nome = document.getElementById("nome").value.trim();
-    const preco = parseFloat(document.getElementById("preco").value);
+    const nome = campoNome.value.trim();
 
-    if (!nome || isNaN(preco) || preco <= 0) {
-        alert("Por favor, introduza um nome válido e um preço maior que zero.");
+    const preco = Number(campoPreco.value);
+
+    const quantidade = Number(campoQuantidade.value);
+
+    if (
+        nome === "" ||
+        campoPreco.value === "" ||
+        campoQuantidade.value === "" ||
+        !Number.isFinite(preco) ||
+        !Number.isInteger(quantidade) ||
+        preco < 0 ||
+        quantidade < 0
+    ) {
+
+        alert("Preencha os campos corretamente!");
+
         return;
+
     }
 
-    const novoProduto = {
-        id: Date.now(),
+    const produto = {
         nome: nome,
-        preco: preco
+        preco: preco,
+        quantidade: quantidade
     };
 
-    produtos.push(novoProduto);
-    salvarNoLocalStorage();
-    renderizarTabela();
+    if (indiceEdicao === null) {
 
-    formProduto.reset();
-});
+        listaDeProdutos.push(produto);
 
-// [NOVO V4] Evento de digitação em tempo real[cite: 1]
-campoBusca.addEventListener("input", function() {
-    renderizarTabela();
-});
-
-function salvarNoLocalStorage() {
-    localStorage.setItem("produtos", JSON.stringify(produtos));
-}
-
-// [NOVO V4] Função de filtro com .filter()[cite: 1, 2]
-function obterProdutosFiltrados() {
-    const termoBusca = campoBusca.value.toLowerCase().trim();
-    return produtos.filter(produto => 
-        produto.nome.toLowerCase().includes(termoBusca)
-    );
-}
-
-function renderizarTabela() {
-    listaProdutos.innerHTML = "";
-
-    // Usa a lista filtrada
-    const produtosFiltrados = obterProdutosFiltrados();
-
-    // [NOVO V4] Controla a mensagem de nenhum produto encontrado[cite: 1]
-    if (produtosFiltrados.length === 0) {
-        mensagemFeedback.style.display = "block";
     } else {
-        mensagemFeedback.style.display = "none";
+
+        listaDeProdutos[indiceEdicao] = produto;
+
+        indiceEdicao = null;
+
+        botaoSalvar.textContent = "Cadastrar";
+
     }
 
-    produtosFiltrados.forEach((produto) => {
-        const tr = document.createElement("tr");
+    salvarProdutos();
 
-        tr.innerHTML = `
-            <td>${produto.nome}</td>
-            <td>R$ ${produto.preco.toFixed(2)}</td>
-            <td>
-                <button onclick="gerarEtiqueta(${produto.id})">🏷️ Gerar QR Code</button>
-                <button onclick="removerProduto(${produto.id})">❌ Eliminar</button>
-            </td>
-        `;
+    formulario.reset();
 
-        listaProdutos.appendChild(tr);
+    renderizarProdutos();
+
+});
+
+
+// FILTRAR PRODUTOS
+
+function obterProdutosFiltrados() {
+
+    const pesquisa = campoBusca.value
+        .trim()
+        .toLowerCase();
+
+    return listaDeProdutos.filter(function(produto) {
+
+        return produto.nome
+            .toLowerCase()
+            .includes(pesquisa);
+
     });
 
-    // [NOVO V4] Atualiza métricas com .reduce()[cite: 1]
-    atualizarMetricas(produtosFiltrados);
 }
 
-// [NOVO V4] Cálculo do total visível[cite: 1]
-function atualizarMetricas(produtosVisiveis) {
-    const totalGeral = produtosVisiveis.reduce((soma, produto) => soma + produto.preco, 0);
-    metricasEstoque.innerText = `Total em Estoque (Visível): R$ ${totalGeral.toFixed(2)}`;
-}
 
-function gerarEtiqueta(id) {
-    const produto = produtos.find(p => p.id === id);
-    if (!produto) return;
+// MOSTRAR PRODUTOS NA TELA
 
-    document.getElementById("etiqueta-nome").innerText = `Produto: ${produto.nome}`;
-    document.getElementById("etiqueta-preco").innerText = `Preço: R$ ${produto.preco.toFixed(2)}`;
+function renderizarProdutos() {
 
-    qrcodeContainer.innerHTML = "";
+    tabela.innerHTML = "";
 
-    const dadosQRCode = JSON.stringify({
-        id: produto.id,
-        nome: produto.nome,
-        preco: produto.preco
+    const produtosVisiveis = obterProdutosFiltrados();
+
+    if (produtosVisiveis.length === 0) {
+
+        if (listaDeProdutos.length === 0) {
+
+            mensagemVazia.textContent = "Nenhum produto cadastrado.";
+
+        } else {
+
+            mensagemVazia.textContent = "Produto não encontrado.";
+
+        }
+
+    } else {
+
+        mensagemVazia.textContent = "";
+
+    }
+
+
+    produtosVisiveis.forEach(function(produto) {
+
+        const indice = listaDeProdutos.indexOf(produto);
+
+        const linha = document.createElement("tr");
+
+        const colunaNome = document.createElement("td");
+
+        const colunaPreco = document.createElement("td");
+
+        const colunaQuantidade = document.createElement("td");
+
+        const colunaAcoes = document.createElement("td");
+
+
+        colunaNome.textContent = produto.nome;
+
+        colunaPreco.textContent = produto.preco.toLocaleString(
+            "pt-BR",
+            {
+                style: "currency",
+                currency: "BRL"
+            }
+        );
+
+        colunaQuantidade.textContent = produto.quantidade;
+
+
+        // BOTÃO EDITAR
+
+        const botaoEditar = document.createElement("button");
+
+        botaoEditar.textContent = "Editar";
+
+        botaoEditar.className = "editar";
+
+        botaoEditar.addEventListener("click", function() {
+
+            editarProduto(indice);
+
+        });
+
+
+        // BOTÃO EXCLUIR
+
+        const botaoExcluir = document.createElement("button");
+
+        botaoExcluir.textContent = "Excluir";
+
+        botaoExcluir.className = "excluir";
+
+        botaoExcluir.addEventListener("click", function() {
+
+            excluirProduto(indice);
+
+        });
+
+
+        colunaAcoes.appendChild(botaoEditar);
+
+        colunaAcoes.appendChild(botaoExcluir);
+
+
+        linha.appendChild(colunaNome);
+
+        linha.appendChild(colunaPreco);
+
+        linha.appendChild(colunaQuantidade);
+
+        linha.appendChild(colunaAcoes);
+
+
+        tabela.appendChild(linha);
+
     });
 
-    new QRCode(qrcodeContainer, {
-        text: dadosQRCode,
-        width: 128,
-        height: 128
-    });
 
-    areaEtiqueta.style.display = "block";
+    // CALCULAR TOTAL DO ESTOQUE
+
+    const total = produtosVisiveis.reduce(function(soma, produto) {
+
+        return soma + produto.quantidade;
+
+    }, 0);
+
+    totalEstoque.textContent = "Total em Estoque: " + total;
+
 }
 
-function imprimirEtiqueta() {
-    window.print();
+
+// EDITAR PRODUTO
+
+function editarProduto(indice) {
+
+    const produto = listaDeProdutos[indice];
+
+    campoNome.value = produto.nome;
+
+    campoPreco.value = produto.preco;
+
+    campoQuantidade.value = produto.quantidade;
+
+    indiceEdicao = indice;
+
+    botaoSalvar.textContent = "Salvar Alterações";
+
 }
 
-function removerProduto(id) {
-    produtos = produtos.filter(p => p.id !== id);
-    salvarNoLocalStorage();
-    renderizarTabela();
-    areaEtiqueta.style.display = "none";
+
+// EXCLUIR PRODUTO
+
+function excluirProduto(indice) {
+
+    const confirmar = confirm(
+        "Deseja realmente excluir este produto?"
+    );
+
+    if (confirmar) {
+
+        listaDeProdutos.splice(indice, 1);
+
+        salvarProdutos();
+
+        if (indiceEdicao === indice) {
+
+            indiceEdicao = null;
+
+            formulario.reset();
+
+            botaoSalvar.textContent = "Cadastrar";
+
+        }
+
+        renderizarProdutos();
+
+    }
+
 }
+
+
+// PESQUISA AUTOMÁTICA
+
+campoBusca.addEventListener("input", function() {
+
+    renderizarProdutos();
+
+});
+
+
+// INICIAR PROGRAMA
+
+renderizarProdutos();
